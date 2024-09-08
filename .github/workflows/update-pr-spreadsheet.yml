@@ -40,6 +40,7 @@ jobs:
           "assignees": "${{ join(github.event.pull_request.assignees.*.login, ',') }}",
           "user_site_admin": ${{ github.event.pull_request.user.site_admin }},
           "user_type": "${{ github.event.pull_request.user.type }}",
-          "author_association": "${{ github.event.pull_request.author_association }}"
+          "author_association": "${{ github.event.pull_request.author_association }}",
+          "state": "${{ github.event.pull_request.state }}"
         }' | jq -c .)
         node script.js "$PR_DATA"
