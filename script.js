@@ -38,10 +38,16 @@ async function authorize() {
 // Update Google Sheets with pull request data
 async function updateSpreadsheet(pullRequest) {
   const sheets = await authorize();
+
+  // Handle merged vs closed state
+  let mergedOrClosedStatus = "";
+  if (pullRequest.state === "closed") {
+    // If the PR is closed but not merged, show 'closed'
+    mergedOrClosedStatus = pullRequest.merged_at ? pullRequest.merged_at.split("T")[0].replace("'", "") : "closed";
+  }
+
   const prData = [
-    pullRequest.merged_at 
-      ? (pullRequest.state === 'closed' ? 'closed' : pullRequest.merged_at.split("T")[0].replace("'", "")) 
-      : "",
+    mergedOrClosedStatus,  // This will contain either the merge date or 'closed'
     pullRequest.html_url || "",
     pullRequest.user_login || "",
     pullRequest.title || "",
@@ -111,7 +117,7 @@ async function updateSpreadsheet(pullRequest) {
       // Append new row starting from column B
       await sheets.spreadsheets.values.append({
         spreadsheetId: SPREADSHEET_ID,
-        range: `${SHEET_NAME}!A:H`,
+        range: `${SHEET_NAME}!B:H`,  // Ensure the second PR always starts at column B
         valueInputOption: "RAW",
         resource: { values: [prData] },
       });
