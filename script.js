@@ -36,21 +36,26 @@ async function authorize() {
 }
 
 // Update Google Sheets with pull request data
+// Update Google Sheets with pull request data
 async function updateSpreadsheet(pullRequest) {
   const sheets = await authorize();
   const prData = [
-    pullRequest.merged_at ? pullRequest.merged_at.split("T")[0] : "",
+    pullRequest.merged_at 
+      ? (pullRequest.state === 'closed' ? 'closed' : pullRequest.merged_at.split("T")[0].replace("'", "")) 
+      : "",
     pullRequest.html_url || "",
     pullRequest.user_login || "",
     pullRequest.title || "",
     pullRequest.repo_name || "",
-    pullRequest.updated_at ? pullRequest.updated_at.split("T")[0] : "",
+    pullRequest.updated_at 
+      ? pullRequest.updated_at.split("T")[0].replace("'", "") 
+      : "",
     pullRequest.requested_reviewers || "",
     pullRequest.assignees || "",
   ];
 
   try {
-    // Check if the pull request already exists in the spreadsheet
+    // Fetch existing rows from the sheet
     const { data } = await sheets.spreadsheets.values.get({
       spreadsheetId: SPREADSHEET_ID,
       range: SHEET_NAME,
@@ -59,19 +64,20 @@ async function updateSpreadsheet(pullRequest) {
     const existingRows = data.values || [];
     let rowToUpdate = null;
 
+    // Find the row that corresponds to the pull request URL
     for (let i = 1; i < existingRows.length; i++) {
       if (existingRows[i][1] === pullRequest.html_url) {
-        rowToUpdate = i + 1;
+        rowToUpdate = i + 1; // Get the row number to update
         break;
       }
     }
 
     if (rowToUpdate) {
+      // Check if row data has changed and update if necessary
       const existingData = existingRows[rowToUpdate - 1];
       const prDataString = JSON.stringify(prData);
       const existingDataString = JSON.stringify(existingData);
 
-      // Compare entire row data
       if (prDataString !== existingDataString) {
         console.log(`Detected changes for row ${rowToUpdate}.`);
 
@@ -86,8 +92,8 @@ async function updateSpreadsheet(pullRequest) {
           }
         }
 
-        // Batch update the changed columns
         if (updates.length > 0) {
+          // Batch update changed columns
           await sheets.spreadsheets.values.batchUpdate({
             spreadsheetId: SPREADSHEET_ID,
             resource: {
@@ -103,9 +109,10 @@ async function updateSpreadsheet(pullRequest) {
         console.log(`No changes detected for row ${rowToUpdate}.`);
       }
     } else {
+      // Append new row starting from column B
       await sheets.spreadsheets.values.append({
         spreadsheetId: SPREADSHEET_ID,
-        range: `${SHEET_NAME}!A:H`,
+        range: `${SHEET_NAME}!B:H`,  // Ensure the second PR always starts at column B
         valueInputOption: "RAW",
         resource: { values: [prData] },
       });
