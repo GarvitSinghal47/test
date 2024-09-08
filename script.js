@@ -36,19 +36,20 @@ async function authorize() {
 }
 
 // Update Google Sheets with pull request data
-// Update Google Sheets with pull request data
 async function updateSpreadsheet(pullRequest) {
   const sheets = await authorize();
   const prData = [
-    pullRequest.merged_at 
-      ? (pullRequest.state === 'closed' ? 'closed' : pullRequest.merged_at.split("T")[0].replace("'", "")) 
+    pullRequest.state === "closed"
+      ? "closed"
+      : pullRequest.merged_at
+      ? pullRequest.merged_at.split("T")[0].replace("'", "")
       : "",
     pullRequest.html_url || "",
     pullRequest.user_login || "",
     pullRequest.title || "",
     pullRequest.repo_name || "",
-    pullRequest.updated_at 
-      ? pullRequest.updated_at.split("T")[0].replace("'", "") 
+    pullRequest.updated_at
+      ? pullRequest.updated_at.split("T")[0].replace("'", "")
       : "",
     pullRequest.requested_reviewers || "",
     pullRequest.assignees || "",
@@ -112,7 +113,7 @@ async function updateSpreadsheet(pullRequest) {
       // Append new row starting from column B
       await sheets.spreadsheets.values.append({
         spreadsheetId: SPREADSHEET_ID,
-        range: `${SHEET_NAME}!B:H`,  // Ensure the second PR always starts at column B
+        range: `${SHEET_NAME}!B:H`, // Ensure the second PR always starts at column B
         valueInputOption: "RAW",
         resource: { values: [prData] },
       });
