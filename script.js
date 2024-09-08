@@ -113,7 +113,7 @@ async function updateSpreadsheet(pullRequest) {
       // Append new row starting from column B
       await sheets.spreadsheets.values.append({
         spreadsheetId: SPREADSHEET_ID,
-        range: `${SHEET_NAME}!B:H`, // Ensure the second PR always starts at column B
+        range: `${SHEET_NAME}!A:H`,
         valueInputOption: "RAW",
         resource: { values: [prData] },
       });
