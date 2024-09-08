@@ -36,7 +36,6 @@ async function authorize() {
 }
 
 // Update Google Sheets with pull request data
-// Update Google Sheets with pull request data
 async function updateSpreadsheet(pullRequest) {
   const sheets = await authorize();
   const prData = [
