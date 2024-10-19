@@ -35,7 +35,7 @@ jobs:
         SHEET_NAME: ${{ secrets.SHEET_NAME }}
         GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
       run: |
-        node scripts.js 
+        node script.js 
           "${{ github.event.pull_request.state }}" 
           "${{ github.event.pull_request.merged_at }}" \
           "${{ github.event.pull_request.html_url }}" \
