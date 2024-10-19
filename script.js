@@ -51,7 +51,7 @@ async function updateSpreadsheet(prData) {
 
     // Find the row that corresponds to the pull request URL
     for (let i = 1; i < existingRows.length; i++) {
-      if (existingRows[i][1] === prData[1]) { // prData[1] is the PR URL
+      if (existingRows[i][1] === prData[2]) { // prData[2] is the PR URL
         rowToUpdate = i + 1; // Get the row number to update
         break;
       }
@@ -99,7 +99,7 @@ async function updateSpreadsheet(prData) {
         spreadsheetId: SPREADSHEET_ID,
         range: `${SHEET_NAME}!A:H`,
         valueInputOption: "RAW",
-        resource: { values: [prData] },
+        resource: { values: [prData.slice(0, 8)] },
       });
       console.log(`Added new row to Google Sheets.`);
     }
@@ -112,9 +112,9 @@ async function updateSpreadsheet(prData) {
 async function handlePullRequestChange(prData) {
   // Filter out PRs from members of the organization
   if (
-    prData[8] !== 'true' && // user_site_admin
-    prData[9] === 'User' && // user_type
-    !prData[10].includes("MEMBER") // author_association
+    prData[9] !== 'true' && // user_site_admin
+    prData[10] === 'User' && // user_type
+    !prData[11].includes("MEMBER") // author_association
   ) {
     await updateSpreadsheet(prData);
   } else {
@@ -135,8 +135,8 @@ try {
 // Parse command-line arguments
 const prData = process.argv.slice(2);
 
-if (prData.length !== 11) {
-  console.error("Incorrect number of arguments provided.");
+if (prData.length !== 12) {
+  console.error(`Incorrect number of arguments provided. Expected 12, got ${prData.length}.`);
   process.exit(1);
 }
 
