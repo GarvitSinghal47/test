@@ -1,5 +1,4 @@
 name: Update PR Spreadsheet
-
 on:
   pull_request:
     types: [opened, reopened, edited, closed, synchronize, assigned, unassigned, review_requested, review_request_removed]
@@ -13,7 +12,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
+
+    - name: Checkout .github repository
+      uses: actions/checkout@v4
+      with:
+        repository: learningequality/.github
+        path: .github-repo
 
     - name: Setup Node.js
       uses: actions/setup-node@v2
@@ -22,6 +27,7 @@ jobs:
 
     - name: Install dependencies
       run: npm install
+      working-directory: .github-repo
 
     - name: Run script
       env:
@@ -29,18 +35,16 @@ jobs:
         SHEET_NAME: ${{ secrets.SHEET_NAME }}
         GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
       run: |
-        PR_DATA=$(echo '{
-          "merged_at": "${{ github.event.pull_request.merged_at }}",
-          "html_url": "${{ github.event.pull_request.html_url }}",
-          "user_login": "${{ github.event.pull_request.user.login }}",
-          "title": "${{ github.event.pull_request.title }}",
-          "repo_name": "${{ github.event.pull_request.base.repo.name }}",
-          "updated_at": "${{ github.event.pull_request.updated_at }}",
-          "requested_reviewers": "${{ join(github.event.pull_request.requested_reviewers.*.login, ',') }}",
-          "assignees": "${{ join(github.event.pull_request.assignees.*.login, ',') }}",
-          "user_site_admin": ${{ github.event.pull_request.user.site_admin }},
-          "user_type": "${{ github.event.pull_request.user.type }}",
-          "author_association": "${{ github.event.pull_request.author_association }}",
-          "state": "${{ github.event.pull_request.state }}"
-        }' | jq -c .)
-        node script.js "$PR_DATA"
+        node .github-repo/scripts/update-pr-spreadsheet.js \
+          "${{ github.event.pull_request.state }}" \
+          "${{ github.event.pull_request.merged_at }}" \
+          "${{ github.event.pull_request.html_url }}" \
+          "${{ github.event.pull_request.user.login }}" \
+          "${{ github.event.pull_request.title }}" \
+          "${{ github.event.pull_request.base.repo.name }}" \
+          "${{ github.event.pull_request.updated_at }}" \
+          "${{ join(github.event.pull_request.requested_reviewers.*.login, ',') }}" \
+          "${{ join(github.event.pull_request.assignees.*.login, ',') }}" \
+          "${{ github.event.pull_request.user.site_admin }}" \
+          "${{ github.event.pull_request.user.type }}" \
+          "${{ github.event.pull_request.author_association }}"
