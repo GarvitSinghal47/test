@@ -51,7 +51,8 @@ async function updateSpreadsheet(prData) {
 
     // Find the row that corresponds to the pull request URL
     for (let i = 1; i < existingRows.length; i++) {
-      if (existingRows[i][2] === prData[2]) { // prData[2] is the PR URL
+      if (existingRows[i][2] === prData[2]) {
+        // prData[2] is the PR URL
         rowToUpdate = i + 1; // Get the row number to update
         break;
       }
@@ -107,8 +108,8 @@ async function updateSpreadsheet(prData) {
 async function handlePullRequestChange(prData) {
   // Filter out PRs from members of the organization
   if (
-    prData[9] !== 'true' && // user_site_admin
-    prData[10] === 'User' && // user_type
+    prData[9] !== "true" && // user_site_admin
+    prData[10] === "User" && // user_type
     !prData[11].includes("MEMBER") // author_association
   ) {
     await updateSpreadsheet(prData);
@@ -131,7 +132,9 @@ try {
 const prData = process.argv.slice(2);
 
 if (prData.length !== 12) {
-  console.error(`Incorrect number of arguments provided. Expected 12, got ${prData.length}.`);
+  console.error(
+    `Incorrect number of arguments provided. Expected 12, got ${prData.length}.`
+  );
   console.error("Received arguments:", prData);
   process.exit(1);
 }
