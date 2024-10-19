@@ -21,9 +21,9 @@ function validateEnvVariables() {
 // Set up GoogleAuth for Google Sheets API
 async function authorize() {
   try {
-    const credentials = JSON.parse(GOOGLE_CREDENTIALS);
+    // const credentials = JSON.parse(GOOGLE_CREDENTIALS);
     const auth = new google.auth.GoogleAuth({
-      credentials,
+      GOOGLE_CREDENTIALS,
       scopes: ["https://www.googleapis.com/auth/spreadsheets"],
     });
     const authClient = await auth.getClient();
@@ -51,7 +51,8 @@ async function updateSpreadsheet(prData) {
 
     // Find the row that corresponds to the pull request URL
     for (let i = 1; i < existingRows.length; i++) {
-      if (existingRows[i][2] === prData[2]) { // prData[2] is the PR URL
+      if (existingRows[i][2] === prData[2]) {
+        // prData[2] is the PR URL
         rowToUpdate = i + 1; // Get the row number to update
         break;
       }
@@ -107,8 +108,8 @@ async function updateSpreadsheet(prData) {
 async function handlePullRequestChange(prData) {
   // Filter out PRs from members of the organization
   if (
-    prData[9] !== 'true' && // user_site_admin
-    prData[10] === 'User' && // user_type
+    prData[9] !== "true" && // user_site_admin
+    prData[10] === "User" && // user_type
     !prData[11].includes("MEMBER") // author_association
   ) {
     await updateSpreadsheet(prData);
@@ -129,9 +130,10 @@ try {
 
 // Parse command-line arguments
 const prData = process.argv.slice(2);
-
 if (prData.length !== 12) {
-  console.error(`Incorrect number of arguments provided. Expected 12, got ${prData.length}.`);
+  console.error(
+    `Incorrect number of arguments provided. Expected 12, got ${prData.length}.`
+  );
   console.error("Received arguments:", prData);
   process.exit(1);
 }
