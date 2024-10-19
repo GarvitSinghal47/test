@@ -27,7 +27,7 @@ jobs:
 
     - name: Install dependencies
       run: npm install
-      working-directory: .github-repo
+      # working-directory: .github-repo
 
     - name: Run script
       env:
