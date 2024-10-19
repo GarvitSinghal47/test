@@ -35,8 +35,8 @@ jobs:
         SHEET_NAME: ${{ secrets.SHEET_NAME }}
         GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
       run: |
-        node .github-repo/scripts/update-pr-spreadsheet.js \
-          "${{ github.event.pull_request.state }}" \
+        node scripts/update-pr-spreadsheet.js 
+          "${{ github.event.pull_request.state }}" 
           "${{ github.event.pull_request.merged_at }}" \
           "${{ github.event.pull_request.html_url }}" \
           "${{ github.event.pull_request.user.login }}" \
