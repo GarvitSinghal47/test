@@ -21,9 +21,9 @@ function validateEnvVariables() {
 // Set up GoogleAuth for Google Sheets API
 async function authorize() {
   try {
-    const credentials = JSON.parse(GOOGLE_CREDENTIALS);
+    // const credentials = JSON.parse(GOOGLE_CREDENTIALS);
     const auth = new google.auth.GoogleAuth({
-      credentials,
+      GOOGLE_CREDENTIALS,
       scopes: ["https://www.googleapis.com/auth/spreadsheets"],
     });
     const authClient = await auth.getClient();
@@ -130,7 +130,6 @@ try {
 
 // Parse command-line arguments
 const prData = process.argv.slice(2);
-
 if (prData.length !== 12) {
   console.error(
     `Incorrect number of arguments provided. Expected 12, got ${prData.length}.`
